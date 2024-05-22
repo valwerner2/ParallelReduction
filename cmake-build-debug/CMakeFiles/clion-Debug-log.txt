@@ -1,0 +1,5 @@
+C:\Users\valwe\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/Users/valwe/AppData/Local/Programs/CLion/bin/ninja/win/x64/ninja.exe -G Ninja -S C:\Users\valwe\CLionProjects\ParallelReduction -B C:\Users\valwe\CLionProjects\ParallelReduction\cmake-build-debug
+cmake_module_path:C:/Users/valwe/CLionProjects/ParallelReduction/cmake_modules
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/valwe/CLionProjects/ParallelReduction/cmake-build-debug

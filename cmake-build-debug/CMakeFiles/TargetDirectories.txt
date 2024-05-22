@@ -1,0 +1,3 @@
+C:/Users/valwe/CLionProjects/ParallelReduction/cmake-build-debug/CMakeFiles/ParallelReduction.dir
+C:/Users/valwe/CLionProjects/ParallelReduction/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/valwe/CLionProjects/ParallelReduction/cmake-build-debug/CMakeFiles/rebuild_cache.dir

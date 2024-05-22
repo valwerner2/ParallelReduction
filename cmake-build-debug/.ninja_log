@@ -1,0 +1,6 @@
+# ninja log v5
+2	243	7372160901122559	build.ninja	a78f10373c4b4231
+2	632	7372148816143234	CMakeFiles/ParallelReduction.dir/main.cpp.obj	ff50a66ac9d43ac
+634	795	7372148817722054	ParallelReduction.exe	b7103bf312aaabbd
+6	4947	7372161012771259	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
+4953	5065	7372161013921954	ParallelReduction.exe	b7103bf312aaabbd
