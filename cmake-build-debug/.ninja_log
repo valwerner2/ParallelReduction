@@ -1,6 +1,10 @@
 # ninja log v5
 2	243	7372160901122559	build.ninja	a78f10373c4b4231
-2	632	7372148816143234	CMakeFiles/ParallelReduction.dir/main.cpp.obj	ff50a66ac9d43ac
-634	795	7372148817722054	ParallelReduction.exe	b7103bf312aaabbd
-6	4947	7372161012771259	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
-4953	5065	7372161013921954	ParallelReduction.exe	b7103bf312aaabbd
+5	1684	7381792641478586	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
+1690	1786	7381792642473862	ParallelReduction.exe	b7103bf312aaabbd
+6	1649	7381792815808003	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
+1653	1744	7381792816733166	ParallelReduction.exe	b7103bf312aaabbd
+4	1701	7381797147668255	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
+1707	1810	7381797148752607	ParallelReduction.exe	b7103bf312aaabbd
+5	1708	7381797298841727	CMakeFiles/ParallelReduction.dir/main.cpp.obj	8af5d6a18d9a62dd
+1710	1814	7381797299886894	ParallelReduction.exe	b7103bf312aaabbd
