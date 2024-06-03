@@ -1,4 +1,4 @@
-__kernel void vector_sum(__constant float* a, __constant float* b, __global float* c)
+__kernel void vector_sum(__global long long int* a, __global long long int* b, __global long long int* c)
 {
     int i = get_global_id(0);
     c[i] = a[i] + b[i];
