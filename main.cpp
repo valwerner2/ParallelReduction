@@ -200,8 +200,40 @@ int testHost()
     std::ofstream withoutStartup("../withoutStartup.csv");
     std::ofstream withStartup("../withStartup.csv");
 
+    std::vector<std::ofstream> deviations(8);
+    std::vector<std::ofstream> deviationsStartup(6);
+
+    deviations[0] = std::ofstream("../singleResults/singleCPU.csv");
+    deviations[1] = std::ofstream("../singleResults/multiCPU.csv");
+
+    deviations[2] = std::ofstream("../singleResults/Dournac.csv");
+    deviationsStartup[0] = std::ofstream("../singleResults/DournacStartup.csv");
+
+    deviations[3] = std::ofstream("../singleResults/Catanzaro.csv");
+    deviationsStartup[1] = std::ofstream("../singleResults/CatanzaroStartup.csv");
+
+    deviations[4] = std::ofstream("../singleResults/Divergence.csv");
+    deviationsStartup[2] = std::ofstream("../singleResults/DivergenceStartup.csv");
+
+    deviations[5] = std::ofstream("../singleResults/Loop.csv");
+    deviationsStartup[3] = std::ofstream("../singleResults/LoopStartup.csv");
+
+    deviations[6] = std::ofstream("../singleResults/ProCon.csv");
+    deviationsStartup[4] = std::ofstream("../singleResults/ProConStartup.csv");
+
+    deviations[7] = std::ofstream("../singleResults/Coalesced.csv");
+    deviationsStartup[5] = std::ofstream("../singleResults/CoalescedStartup.csv");
+
     currentFile = &withoutStartup;
 
+    for(int h = 0; h < 8; h++)
+    {
+        deviations[h] <<"Elements, Results\n";
+    }
+    for(int h = 0; h < 6; h++)
+    {
+        deviationsStartup[h] <<"Elements, Results\n";
+    }
     for(int g = 0; g < 2; g++)
     {
         if(measureSetupTime)
@@ -219,11 +251,26 @@ int testHost()
                     "ProducerConsumer",
                     "Coalesced");
         (*currentFile) <<  "Elements, SingleCore CPU, MultiCore CPU, Dournac, Catanzaro, Divergence, Loop unrolling, ProducerConsumer, Coalesced\n";
+
         uint64_t avg = 0;
         for (int i = 0; i < MAX_DATA_SIZE_SHIFTS; i++)
         {
             size_t elementCount = LOCAL_SIZE * WORK_GROUP_COUNT * (1 << i);
             (*currentFile) << elementCount << ", ";
+            if(!measureSetupTime)
+            {
+                for(int h = 0; h < 8; h++)
+                {
+                    deviations[h] << elementCount << ", ";
+                }
+            }
+            else
+            {
+                for(int h = 0; h < 6; h++)
+                {
+                    deviationsStartup[h] << elementCount << ", ";
+                }
+            }
             printf("%10llu|", elementCount);
             std::vector<uint32_t> *testArray = createdArray(elementCount);
             uint32_t correctResult = 0U;
@@ -231,74 +278,139 @@ int testHost()
             //1
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test1SingleCoreCPU(&correctResult, testArray, elementCount);
+                uint64_t temp = test1SingleCoreCPU(&correctResult, testArray, elementCount);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[0] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
+            deviations[0] << "\n";
             printf("%15llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //2
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test2MultiCoreCPU(correctResult, testArray, elementCount);
+                uint64_t temp = test2MultiCoreCPU(correctResult, testArray, elementCount);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[1] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%15llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //3
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test3Dournac(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                uint64_t temp = test3Dournac(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[2] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
+                else
+                {
+                    deviationsStartup[0] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%7llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //4
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test4Catanzaro(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                uint64_t temp = test4Catanzaro(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[3] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
+                else
+                {
+                    deviationsStartup[1] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%10llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //5
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test5Divergence(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                uint64_t temp = test5Divergence(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[4] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
+                else
+                {
+                    deviationsStartup[2] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%12llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //6
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test6LoopUnrolling(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                uint64_t temp = test6LoopUnrolling(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[5] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
+                else
+                {
+                    deviationsStartup[3] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%15llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //7
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test7ProducerConsumer(correctResult, testArray, elementCount, context, commandQueue,
+                uint64_t temp = test7ProducerConsumer(correctResult, testArray, elementCount, context, commandQueue,
                                              devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[6] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
+                else
+                {
+                    deviationsStartup[4] << temp << (j == (AVERAGE_OUT_OF - 1) ? "\n" : ", ");
+                }
             }
             printf("%16llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg << ", ";
+            (*currentFile) << avg / AVERAGE_OUT_OF << ", ";
             avg = 0;
 
             //8
             for (int j = 0; j < AVERAGE_OUT_OF; j++)
             {
-                avg += test8Coalesced(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                uint64_t temp = test8Coalesced(correctResult, testArray, elementCount, context, commandQueue, devicesToUse);
+                avg += temp;
+                if(!measureSetupTime)
+                {
+                    deviations[7] << temp;
+                }
+                else
+                {
+                    deviationsStartup[5] << temp;
+                }
             }
             printf("%10llu|", avg / AVERAGE_OUT_OF);
-            (*currentFile) << avg;
+            (*currentFile) << avg / AVERAGE_OUT_OF;
             avg = 0;
 
             (*currentFile) << "\n";
@@ -309,7 +421,14 @@ int testHost()
         measureSetupTime = 1;
         currentFile = &withStartup;
     }
-
+    for(int h = 0; h < 8; h++)
+    {
+        deviations[h].close();
+    }
+    for(int h = 0; h < 6; h++)
+    {
+        deviationsStartup[h].close();
+    }
     return 0;
 }
 uint64_t test1SingleCoreCPU(uint32_t* correctResult, std::vector<uint32_t>* arr, size_t size)
@@ -359,10 +478,7 @@ uint64_t test2MultiCoreCPU(uint32_t correctResult, std::vector<uint32_t>* arr, s
 uint64_t test3Dournac(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction1.cl");
@@ -376,6 +492,10 @@ uint64_t test3Dournac(uint32_t correctResult, std::vector<uint32_t>* arr, size_t
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -414,10 +534,7 @@ uint64_t test3Dournac(uint32_t correctResult, std::vector<uint32_t>* arr, size_t
 uint64_t test4Catanzaro(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction2.cl");
@@ -431,6 +548,10 @@ uint64_t test4Catanzaro(uint32_t correctResult, std::vector<uint32_t>* arr, size
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -469,10 +590,7 @@ uint64_t test4Catanzaro(uint32_t correctResult, std::vector<uint32_t>* arr, size
 uint64_t test5Divergence(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction3.cl");
@@ -486,6 +604,10 @@ uint64_t test5Divergence(uint32_t correctResult, std::vector<uint32_t>* arr, siz
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -524,10 +646,7 @@ uint64_t test5Divergence(uint32_t correctResult, std::vector<uint32_t>* arr, siz
 uint64_t test6LoopUnrolling(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction4.cl");
@@ -541,6 +660,10 @@ uint64_t test6LoopUnrolling(uint32_t correctResult, std::vector<uint32_t>* arr, 
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -579,10 +702,7 @@ uint64_t test6LoopUnrolling(uint32_t correctResult, std::vector<uint32_t>* arr, 
 uint64_t test7ProducerConsumer(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction5.cl");
@@ -596,6 +716,10 @@ uint64_t test7ProducerConsumer(uint32_t correctResult, std::vector<uint32_t>* ar
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -610,8 +734,8 @@ uint64_t test7ProducerConsumer(uint32_t correctResult, std::vector<uint32_t>* ar
         err = kernel.setArg(1, cl::Local(LOCAL_SIZE * sizeof(DATA_TYPE))); CHECK_ERROR(err);
         err = kernel.setArg(2, sizeof(cl_int), &countData); CHECK_ERROR(err);
         err = kernel.setArg(3, kernelGlobalOutput); CHECK_ERROR(err);
-        err = kernel.setArg(4, cl::Local(WORK_GROUP_COUNT*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
-        err = kernel.setArg(5, cl::Local(WORK_GROUP_COUNT*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
+        err = kernel.setArg(4, cl::Local(8*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
+        err = kernel.setArg(5, cl::Local(8*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
 
         cl::NDRange global(LOCAL_SIZE*WORK_GROUP_COUNT);
         cl::NDRange local(LOCAL_SIZE);
@@ -634,10 +758,7 @@ uint64_t test7ProducerConsumer(uint32_t correctResult, std::vector<uint32_t>* ar
 uint64_t test8Coalesced(uint32_t correctResult, std::vector<uint32_t>* arr, size_t size, cl::Context context, cl::CommandQueue commandQueue, std::vector<cl::Device>& devicesToUse)
 {
     auto astart_time = std::chrono::steady_clock::now();
-    if(measureSetupTime)
-    {
-        astart_time = std::chrono::steady_clock::now();
-    }
+    
     cl_int err;
     std::vector<uint32_t> hostGlobalOutput(size);
     std::ifstream sourceFile("..//sumReduction6.cl");
@@ -651,6 +772,10 @@ uint64_t test8Coalesced(uint32_t correctResult, std::vector<uint32_t>* arr, size
 
     size_t sizeData = size * sizeof(DATA_TYPE);
     size_t countData = size;
+    if(measureSetupTime)
+    {
+        astart_time = std::chrono::steady_clock::now();
+    }
     cl::Buffer kernelGlobalInput = cl::Buffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeData, arr->data(), &err); CHECK_ERROR(err);
     cl::Buffer kernelGlobalOutput = cl::Buffer(context, CL_MEM_KERNEL_READ_AND_WRITE, sizeData);
 
@@ -665,8 +790,8 @@ uint64_t test8Coalesced(uint32_t correctResult, std::vector<uint32_t>* arr, size
         err = kernel.setArg(1, cl::Local(LOCAL_SIZE * sizeof(DATA_TYPE))); CHECK_ERROR(err);
         err = kernel.setArg(2, sizeof(cl_int), &countData); CHECK_ERROR(err);
         err = kernel.setArg(3, kernelGlobalOutput); CHECK_ERROR(err);
-        err = kernel.setArg(4, cl::Local(WORK_GROUP_COUNT*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
-        err = kernel.setArg(5, cl::Local(WORK_GROUP_COUNT*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
+        err = kernel.setArg(4, cl::Local(8*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
+        err = kernel.setArg(5, cl::Local(8*LOCAL_SIZE/2 * sizeof(DATA_TYPE))); CHECK_ERROR(err);
 
         cl::NDRange global(LOCAL_SIZE*WORK_GROUP_COUNT);
         cl::NDRange local(LOCAL_SIZE);

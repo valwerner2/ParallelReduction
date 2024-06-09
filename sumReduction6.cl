@@ -51,7 +51,7 @@ __kernel void reduce(global uint* input,
     }
     //Perform parallel reduction
 
-    localSum[((local_index - 1)/2) * (!is_producer) + is_producer * group_size*get_num_groups(0)] = accumulator;
+    localSum[((local_index - 1)/2) * (!is_producer) + is_producer * group_size*get_num_groups(0) / 2 ] = accumulator;
     for (int offset = group_size/4; offset > 0; offset = offset/2)
     {
         barrier(CLK_LOCAL_MEM_FENCE);
