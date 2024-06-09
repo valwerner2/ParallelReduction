@@ -1,0 +1,23 @@
+Edition	Windows 11 Home
+Version	23H2
+Installed on	‎10/‎10/‎2023
+OS build	22631.3593
+Experience	Windows Feature Experience Pack 1000.22700.1003.0
+
+Device name	G14Valentin
+Processor	AMD Ryzen 9 6900HS with Radeon Graphics           3.30 GHz
+Installed RAM	40,0 GB (39,2 GB usable)
+Device ID	1746DB07-F69F-4B89-9049-D651203A3527
+Product ID	00342-20940-88436-AAOEM
+System type	64-bit operating system, x64-based processor
+Pen and touch	No pen or touch input is available for this display
+
+GPU 24.5.1
+BIOS-Version
+020.003.000.030
+BIOS-Datum
+2022/04/26 07:10
+Aktuelle Buseinstellungen
+PCI Express 4.0 x8
+Speichertyp
+GDDR6
